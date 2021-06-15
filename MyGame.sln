@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31402.337
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyGame", "MyGame.csproj", "{523E28C7-E538-4221-8EFE-178172ED1E3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyGame", "Sources\MyGame.csproj", "{523E28C7-E538-4221-8EFE-178172ED1E3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleGameEngine", "..\ConsoleGameEngine\Source\ConsoleGameEngine.csproj", "{7AF47A03-FABF-458B-BE6F-4F8BEF89A7E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleGameEngine", "ConsoleGameEngine\Source\ConsoleGameEngine.csproj", "{7AF47A03-FABF-458B-BE6F-4F8BEF89A7E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

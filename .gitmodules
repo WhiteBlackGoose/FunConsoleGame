@@ -1,0 +1,3 @@
+[submodule "ConsoleGameEngine"]
+	path = ConsoleGameEngine
+	url = https://github.com/ollelogdahl/ConsoleGameEngine
