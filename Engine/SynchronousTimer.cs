@@ -25,7 +25,7 @@ public sealed class SynchronousTimer
         eventsToDelete.Clear();
         foreach (var e in events)
         {
-            if (e.TimeLeft is < 1)
+            if (e.TimeLeft is <= 1)
             {
                 if (!e.Callback(e.CurrentIter))
                     eventsToDelete.Add(e);

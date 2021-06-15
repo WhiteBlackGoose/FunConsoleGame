@@ -11,6 +11,7 @@ public sealed class MyGame : ConsoleGame
     private readonly Person person = new();
     private readonly SynchronousTimer phyTimer = new();
     private readonly UISyncTimer uiTimer = new();
+    // private readonly HashSet<Enemy> enemies;
     
     public override void Create()
     {
