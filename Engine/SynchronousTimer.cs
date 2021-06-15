@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using HonkSharp.Fluency;
+using HonkSharp.Functional;
 
 public sealed class SynchronousTimer
 {
@@ -15,14 +17,25 @@ public sealed class SynchronousTimer
     
     private readonly HashSet<TimerEvent> events = new();
 
-    public void AddEvent(int interval, int? numOfIterations, Func<int, bool> callback)
-        => events.Add(new TimerEvent { TimeLeft = interval, CurrentIter = 0, Interval = interval, IterNumber = numOfIterations,
-            Callback = callback });
+    private readonly Queue<TimerEvent> queue = new();
+    private bool isEmitted = false;
+    
+    public Unit AddEvent(int interval, int? numOfIterations, Func<int, bool> callback)
+        => new TimerEvent { TimeLeft = interval, CurrentIter = 0, Interval = interval, IterNumber = numOfIterations,
+            Callback = callback }
+            .Pipe(ev => isEmitted 
+                ? ev.Pipe(queue.Enqueue).Discard() 
+                : events.Add(ev).Discard());
+    
+    private Unit AddEvent(TimerEvent ev)
+        => events.Add(ev).Discard();
 
     private readonly List<TimerEvent> eventsToDelete = new();
     public void Emit()
     {
         eventsToDelete.Clear();
+        
+        isEmitted = true;
         foreach (var e in events)
         {
             if (e.TimeLeft is <= 1)
@@ -41,6 +54,9 @@ public sealed class SynchronousTimer
             else
                 e.TimeLeft--;
         }
+        isEmitted = false;
+        while (queue.Count > 0)
+            AddEvent(queue.Dequeue());
 
         for (int i = 0; i < eventsToDelete.Count; i++)
             events.Remove(eventsToDelete[i]);

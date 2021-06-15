@@ -9,7 +9,7 @@ public sealed class Bullet
     public bool IsEnemy { get; }
 
     public Bullet(int x, int y, double speedX, double speedY, bool isEnemy)
-        => (movable.X, movable.Y, this.speedX, this.speedY, this.IsEnemy) = (x, y, speedX, speedY, isEnemy);
+        => (movable.X, movable.Y, this.speedX, this.speedY, IsEnemy) = (x, y, speedX, speedY, isEnemy);
 
     public Unit MoveByDelta(double time)
         => movable.Move(speedX * time, speedY * time);

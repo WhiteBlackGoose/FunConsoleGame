@@ -29,6 +29,25 @@
 .     .
  . . .
 "
-        }, color: 2, interval: 75, true
+        }, color: 2, interval: 75, finite: true
     );
+    
+    public static AnimationFigure SmallExplosion = new(new[]
+    {
+@"
+.
+",
+@"
+*
+",
+@"
+ %
+% %
+ %
+",
+@"
+ .
+. .
+ .
+"}, color: 2, interval: 75, finite: true);
 }
