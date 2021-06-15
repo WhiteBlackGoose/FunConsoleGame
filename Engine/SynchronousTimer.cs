@@ -5,12 +5,12 @@ using HonkSharp.Functional;
 
 public sealed class SynchronousTimer
 {
-    private sealed class TimerEvent
+    public sealed class TimerEvent
     {
         public int TimeLeft { get; set; }
         public int CurrentIter { get; set; }
         
-        public int Interval { get; init; }
+        public int Interval { get; set; }
         public int? IterNumber { get; init; }
         public Func<int, bool> Callback { get; init; }
     }
@@ -20,12 +20,14 @@ public sealed class SynchronousTimer
     private readonly Queue<TimerEvent> queue = new();
     private bool isEmitted = false;
     
-    public Unit AddEvent(int interval, int? numOfIterations, Func<int, bool> callback)
+    public TimerEvent AddEvent(int interval, int? numOfIterations, Func<int, bool> callback)
         => new TimerEvent { TimeLeft = interval, CurrentIter = 0, Interval = interval, IterNumber = numOfIterations,
             Callback = callback }
+            .Alias(out var ev)
             .Pipe(ev => isEmitted 
                 ? ev.Pipe(queue.Enqueue).Discard() 
-                : events.Add(ev).Discard());
+                : events.Add(ev).Discard())
+            .ReplaceWith(ev);
     
     private Unit AddEvent(TimerEvent ev)
         => events.Add(ev).Discard();

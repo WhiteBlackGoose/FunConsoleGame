@@ -19,27 +19,51 @@ public sealed class MyGame : ConsoleGame
     private readonly HashSet<Bullet> enemyBullets = new();
     private readonly HashSet<Enemy> enemies = new();
     
-    private const int EnemyMaxCount = 5;
+    
+    private const int DefaultSpawnInterval = 3000;
+    private const int MinimumSpawnInterval = 1000;
+    private const int SpawnDecrease = 100;
+    private const int SpawnDecreaseInterval = 25_000;
+    
+    private const int EnemyCountLimitMin = 5;
+    private const int EnemyCountLimitMax = 30;
+    private const int EnemyCountLimitIncreaseInterval = 50_000;
+    
+    private const int Cooldown = 100;
+    
+    private int enemyCountLimit = EnemyCountLimitMin;
     private bool isGameOver;
     
     private int enemiesKilled = 0;
-    
+
     public override void Create()
     {
         isGameOver = false;
         
         person.Move(20, 20);
         
-        phyTimer.AddEvent(
-            3000,
+        var ev = phyTimer.AddEvent(
+            DefaultSpawnInterval,
             null,
-            _ => enemies.Count >= EnemyMaxCount || enemies.Add(new Enemy(random.Next(4, Engine.WindowSize.X - 4), 5))
+            _ => enemies.Count >= enemyCountLimit || enemies.Add(new Enemy(random.Next(4, Engine.WindowSize.X - 4), 5))
         );
         
         phyTimer.AddEvent(
-            100,
+            SpawnDecreaseInterval,
+            null,
+            _ => (ev.Interval -= SpawnDecrease).Pipe(interval => interval > MinimumSpawnInterval)
+            );
+        
+        phyTimer.AddEvent(
+            Cooldown,
             null,
             _ => enemies.Select(e => e.ShootIfCan(phyTimer, Engine, enemyBullets, uiTimer)).ToArray().ReplaceWith(true)
+            );
+        
+        phyTimer.AddEvent(
+            EnemyCountLimitIncreaseInterval,
+            null,
+            _ => (enemyCountLimit++).Pipe(enemyCount => enemyCount < EnemyCountLimitMax)
             );
     }
     
