@@ -9,4 +9,8 @@
     <ProjectReference Include="..\ConsoleGameEngine\Source\ConsoleGameEngine.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="HonkSharp" Version="0.0.0-poc.1" />
+  </ItemGroup>
+
 </Project>
