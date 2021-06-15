@@ -1,6 +1,6 @@
 ﻿using HonkSharp.Functional;
 
-public sealed class Person
+public sealed class Person : ILocatable
 {
     private readonly MovableObject movable = new();
     

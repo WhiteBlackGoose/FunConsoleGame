@@ -20,9 +20,14 @@ public sealed class MyGame : ConsoleGame
     private readonly HashSet<Enemy> enemies = new();
     
     private const int EnemyMaxCount = 5;
+    private bool isGameOver;
+    
+    private int enemiesKilled = 0;
     
     public override void Create()
     {
+        isGameOver = false;
+        
         person.Move(20, 20);
         
         phyTimer.AddEvent(
@@ -38,8 +43,15 @@ public sealed class MyGame : ConsoleGame
             );
     }
     
+    private static bool Intersect(ILocatable a, ILocatable b)
+        => (a.X - b.X).Pipe(Math.Abs) <= 1
+           && (a.Y - b.Y).Pipe(Math.Abs) <= 1;
+    
     public override void Update()
     {
+        if (isGameOver)
+            return;
+        
         if (Engine.GetKeyDown(ConsoleKey.UpArrow))
         {
             var bullet = new Bullet(person.X, person.Y, 0, -4, isEnemy: false);
@@ -59,12 +71,11 @@ public sealed class MyGame : ConsoleGame
                             switch
                         {
                             true when enemies
-                                    .FirstOrDefault(enemy => 
-                                        (enemy.X - bullet.X).Pipe(Math.Abs) <= 1
-                                        && (enemy.Y - bullet.Y).Pipe(Math.Abs) <= 1)
+                                    .FirstOrDefault(enemy => (enemy, bullet).Pipe(Intersect))
                                     is { } killedEnemy => bulletRemove(bullet, killedEnemy.X, killedEnemy.Y, AnimationFigures.Explosion)
                                                         .ReplaceWith(killedEnemy)
                                                         .Pipe(enemies.Remove)
+                                                        .Let(out enemiesKilled, enemiesKilled + 1)
                                                         .ReplaceWith(false),
                             
                             true => true,
@@ -75,6 +86,8 @@ public sealed class MyGame : ConsoleGame
                     )
                 );
         }
+        
+        
 
         if (Engine.GetKey(ConsoleKey.W))
             person.Move(0, -0.01);
@@ -85,26 +98,38 @@ public sealed class MyGame : ConsoleGame
         if (Engine.GetKey(ConsoleKey.D))
             person.Move(0.01, 0);
 
-        phyTimer.Emit();
         
+        phyTimer.Emit();
+        if (enemyBullets.Any(b => Intersect(person, b)))
+            isGameOver = true;
     }
 
+    private void WriteCentralText(string text, int color)
+        => Engine.WriteText(new(Engine.WindowSize.X / 2 - text.Length / 2, Engine.WindowSize.Y / 2), text, color);
+    
     public override void Render()
     {
         Engine.ClearBuffer();
         
-        Engine.WriteText(new(0, 0), bullets.Count.ToString(), 1);
+        if (isGameOver)
+            WriteCentralText($"GAME OVER: {enemiesKilled}", 6);
+        else
+        {
+            
+            Engine.WriteText(new(0, 0), enemiesKilled.ToString(), 1);
 
-        foreach (var b in bullets)
-            Figures.Bullet.RenderTo(Engine, b.X, b.Y);
+            foreach (var b in bullets)
+                Figures.Bullet.RenderTo(Engine, b.X, b.Y);
 
-        Figures.Person.RenderTo(Engine, person.X, person.Y);
-        
-        foreach (var e in enemies)
-            Figures.Enemy.RenderTo(Engine, e.X, e.Y);
+            Figures.Person.RenderTo(Engine, person.X, person.Y);
+            
+            foreach (var e in enemies)
+                Figures.Enemy.RenderTo(Engine, e.X, e.Y);
 
-        foreach (var b in enemyBullets)
-            Figures.EnemyBullet.RenderTo(Engine, b.X, b.Y);
+            foreach (var b in enemyBullets)
+                Figures.EnemyBullet.RenderTo(Engine, b.X, b.Y);
+            
+        }
         
         uiTimer.Emit();
 

@@ -2,7 +2,7 @@
 using ConsoleGameEngine;
 using HonkSharp.Fluency;
 
-public sealed class Enemy
+public sealed class Enemy : ILocatable
 {
     private readonly MovableObject movable = new();
     

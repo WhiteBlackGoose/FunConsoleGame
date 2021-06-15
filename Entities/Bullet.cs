@@ -1,6 +1,6 @@
 ﻿using HonkSharp.Functional;
 
-public sealed class Bullet
+public sealed class Bullet : ILocatable
 {
     private readonly MovableObject movable = new();
     
