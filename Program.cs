@@ -23,11 +23,11 @@ public sealed class MyGame : ConsoleGame
     private const int DefaultSpawnInterval = 3000;
     private const int MinimumSpawnInterval = 1000;
     private const int SpawnDecrease = 100;
-    private const int SpawnDecreaseInterval = 25_000;
+    private const int SpawnDecreaseInterval = 10_000;
     
     private const int EnemyCountLimitMin = 5;
     private const int EnemyCountLimitMax = 30;
-    private const int EnemyCountLimitIncreaseInterval = 50_000;
+    private const int EnemyCountLimitIncreaseInterval = 35_000;
     
     private const int Cooldown = 100;
     
@@ -68,8 +68,7 @@ public sealed class MyGame : ConsoleGame
     }
     
     private static bool Intersect(ILocatable a, ILocatable b)
-        => (a.X - b.X).Pipe(Math.Abs) <= 1
-           && (a.Y - b.Y).Pipe(Math.Abs) <= 1;
+        => Math.Abs(a.X - b.X) <= 1 && Math.Abs(a.Y - b.Y) <= 1;
     
     public override void Update()
     {
@@ -93,33 +92,31 @@ public sealed class MyGame : ConsoleGame
                                         .Discard()
                                 )
                             switch
-                        {
-                            true when enemies
-                                    .FirstOrDefault(enemy => (enemy, bullet).Pipe(Intersect))
-                                    is { } killedEnemy => bulletRemove(bullet, killedEnemy.X, killedEnemy.Y, AnimationFigures.Explosion)
-                                                        .ReplaceWith(killedEnemy)
-                                                        .Pipe(enemies.Remove)
-                                                        .Let(out enemiesKilled, enemiesKilled + 1)
-                                                        .ReplaceWith(false),
-                            
-                            true => true,
+                            {
+                                true when enemies
+                                        .FirstOrDefault(enemy => (enemy, bullet).Pipe(Intersect))
+                                        is { } killedEnemy => bulletRemove(bullet, killedEnemy.X, killedEnemy.Y, AnimationFigures.Explosion)
+                                                            .ReplaceWith(killedEnemy)
+                                                            .Pipe(enemies.Remove)
+                                                            .Let(out enemiesKilled, enemiesKilled + 1)
+                                                            .ReplaceWith(false),
+                                
+                                true => true,
 
-                            // bullet outside of the world
-                            false => bulletRemove(bullet, bullet.X, bullet.Y + 3, AnimationFigures.SmallExplosion).ReplaceWith(false)
-                        }
+                                // bullet outside of the world
+                                false => bulletRemove(bullet, bullet.X, bullet.Y + 3, AnimationFigures.SmallExplosion).ReplaceWith(false)
+                            }
                     )
                 );
         }
         
-        
-
-        if (Engine.GetKey(ConsoleKey.W))
+        if (Engine.GetKey(ConsoleKey.W) && person.Y > 13)
             person.Move(0, -0.01);
-        if (Engine.GetKey(ConsoleKey.S))
+        if (Engine.GetKey(ConsoleKey.S) && person.Y < Engine.WindowSize.Y - 2)
             person.Move(0, 0.01);
-        if (Engine.GetKey(ConsoleKey.A))
+        if (Engine.GetKey(ConsoleKey.A) && person.X > 2)
             person.Move(-0.01, 0);
-        if (Engine.GetKey(ConsoleKey.D))
+        if (Engine.GetKey(ConsoleKey.D) && person.X < Engine.WindowSize.X - 3)
             person.Move(0.01, 0);
 
         
@@ -141,6 +138,7 @@ public sealed class MyGame : ConsoleGame
         {
             
             Engine.WriteText(new(0, 0), enemiesKilled.ToString(), 1);
+            Engine.WriteText(new(0, 1), enemyCountLimit.ToString(), 1);
 
             foreach (var b in bullets)
                 Figures.Bullet.RenderTo(Engine, b.X, b.Y);

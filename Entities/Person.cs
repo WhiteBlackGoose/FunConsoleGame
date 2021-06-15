@@ -1,4 +1,5 @@
-﻿using HonkSharp.Functional;
+﻿using HonkSharp.Fluency;
+using HonkSharp.Functional;
 
 public sealed class Person : ILocatable
 {
