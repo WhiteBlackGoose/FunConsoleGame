@@ -10,4 +10,6 @@ public sealed class Person : ILocatable
         
     public int X => movable.X;
     public int Y => movable.Y;
+    public void SetCoords(int x, int y)
+        => (movable.X, movable.Y) = (x, y);
 }

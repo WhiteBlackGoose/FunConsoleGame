@@ -63,4 +63,6 @@ public sealed class SynchronousTimer
         for (int i = 0; i < eventsToDelete.Count; i++)
             events.Remove(eventsToDelete[i]);
     }
+    
+    public void Clear() => events.Clear();
 }

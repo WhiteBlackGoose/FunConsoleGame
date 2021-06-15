@@ -14,4 +14,7 @@ public sealed class UISyncTimer
 
     public void Emit()
         => timer.Emit();
+    
+    public void Clear()
+        => timer.Clear();
 }

@@ -31,16 +31,22 @@ public sealed class MyGame : ConsoleGame
     
     private const int Cooldown = 100;
     
-    private int enemyCountLimit = EnemyCountLimitMin;
+    private int enemyCountLimit;
     private bool isGameOver;
     
     private int enemiesKilled = 0;
 
     public override void Create()
     {
-        isGameOver = false;
-        
-        person.Move(20, 20);
+        enemiesKilled = 0;
+        enemyCountLimit = EnemyCountLimitMin;
+        phyTimer.Clear();
+        uiTimer.Clear();
+        bullets.Clear();
+        enemies.Clear();
+        enemyBullets.Clear();
+
+        person.SetCoords(20, 20);
         
         var ev = phyTimer.AddEvent(
             DefaultSpawnInterval,
@@ -65,6 +71,8 @@ public sealed class MyGame : ConsoleGame
             null,
             _ => (enemyCountLimit++).Pipe(enemyCount => enemyCount < EnemyCountLimitMax)
             );
+        
+        isGameOver = true;
     }
     
     private static bool Intersect(ILocatable a, ILocatable b)
@@ -73,7 +81,14 @@ public sealed class MyGame : ConsoleGame
     public override void Update()
     {
         if (isGameOver)
-            return;
+        {
+            if (Engine.GetKeyDown(ConsoleKey.Spacebar))
+            {
+                Create();
+                isGameOver = false;
+            }
+            return; 
+        }
         
         if (Engine.GetKeyDown(ConsoleKey.UpArrow))
         {
@@ -133,7 +148,12 @@ public sealed class MyGame : ConsoleGame
         Engine.ClearBuffer();
         
         if (isGameOver)
-            WriteCentralText($"GAME OVER: {enemiesKilled}", 6);
+        {
+            if (enemiesKilled is 0)
+                WriteCentralText("PRESS SPACE TO START", 5);
+            else
+                WriteCentralText($"GAME OVER: {enemiesKilled}", 6);
+        }
         else
         {
             
