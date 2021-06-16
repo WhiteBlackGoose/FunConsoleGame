@@ -5,11 +5,6 @@ which is, unfortunately, not maintained anymore. Written in a mixture of OOP and
 functional paradigms (with [Honk#](https://github.com/WhiteBlackGoose/HonkSharp) powering
 the last one).
 
-### Gallery
-
-![gif](./Pics/game.gif)
-
-![single image](./Pics/s.png)
 
 ### Play
 
@@ -22,3 +17,9 @@ dotnet build -c release
 cd Sources
 dotnet run -c release
 ```
+
+### Gallery
+
+![gif](./Pics/game.gif)
+
+![single image](./Pics/s.png)
