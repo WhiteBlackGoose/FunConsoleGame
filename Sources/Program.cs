@@ -5,7 +5,7 @@ using ConsoleGameEngine;
 using HonkSharp.Fluency;
 using HonkSharp.Functional;
 
-new MyGame().Construct(40, 40, 20, 20, FramerateMode.Unlimited);
+new MyGame().Construct(40, 40, 27, 27, FramerateMode.Unlimited);
 
 public sealed class MyGame : ConsoleGame
 {
@@ -33,11 +33,15 @@ public sealed class MyGame : ConsoleGame
     
     private int enemyCountLimit;
     private bool isGameOver;
-    
-    private int enemiesKilled = 0;
+
+    private int bulletsShot;
+    private int bulletsHit;
+    private int enemiesKilled;
 
     public override void Create()
     {
+        bulletsShot = 0;
+        bulletsHit = 0;
         enemiesKilled = 0;
         enemyCountLimit = EnemyCountLimitMin;
         phyTimer.Clear();
@@ -104,6 +108,7 @@ public sealed class MyGame : ConsoleGame
                                             bullet => 
                                                 an.RegisterRenderingTo(uiTimer, Engine, x, y)
                                         )
+                                        .Let(out bulletsShot, bulletsShot + 1)
                                         .Discard()
                                 )
                             switch
@@ -114,6 +119,7 @@ public sealed class MyGame : ConsoleGame
                                                             .ReplaceWith(killedEnemy)
                                                             .Pipe(enemies.Remove)
                                                             .Let(out enemiesKilled, enemiesKilled + 1)
+                                                            .Let(out bulletsHit, bulletsHit + 1)
                                                             .ReplaceWith(false),
                                 
                                 true => true,
@@ -148,17 +154,19 @@ public sealed class MyGame : ConsoleGame
         Engine.ClearBuffer();
         
         if (isGameOver)
-        {
-            if (enemiesKilled is 0)
-                WriteCentralText("PRESS SPACE TO START", 5);
-            else
-                WriteCentralText($"GAME OVER: {enemiesKilled}", 6);
-        }
+            WriteCentralText((enemiesKilled, bulletsHit) switch
+                {
+                    (0, _) => "PRESS SPACE TO START",
+                    (_, 0) => $"GAME OVER: {enemiesKilled}",
+                    _ => $"GAME OVER: {enemiesKilled} ({HitPercentInfo()})"
+                }, 6);
         else
         {
             
-            Engine.WriteText(new(0, 0), enemiesKilled.ToString(), 1);
-            Engine.WriteText(new(0, 1), enemyCountLimit.ToString(), 1);
+            Engine.WriteText(new(0, 0), enemiesKilled.ToString(), 10);
+            Engine.WriteText(new(0, 1), enemyCountLimit.ToString(), 10);
+            if (bulletsShot is not 0)
+                Engine.WriteText(new(0, 2), HitPercentInfo(), 10);
 
             foreach (var b in bullets)
                 Figures.Bullet.RenderTo(Engine, b.X, b.Y);
@@ -178,6 +186,9 @@ public sealed class MyGame : ConsoleGame
         Engine.DisplayBuffer();
         
         Console.Title = "Space battle";
+        
+        string HitPercentInfo()
+            => $"{((double) bulletsHit / bulletsShot * 100):00.0}%";
     }
 }
 

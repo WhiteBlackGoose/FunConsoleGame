@@ -13,7 +13,7 @@ the last one).
 
 ### Play
 
-Install [git](https://git-scm.com) and [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0) and run: 
+Install [git](https://git-scm.com) and [.NET 5 SDK](https://dotnet.microsoft.com/download/dotnet/5.0) and run: 
 ```
 git clone --recurse-submodules https://github.com/WhiteBlackGoose/FunConsoleGame
 cd FunConsoleGame
