@@ -55,7 +55,11 @@ public sealed class MyGame : ConsoleGame
         var ev = phyTimer.AddEvent(
             DefaultSpawnInterval,
             null,
-            _ => enemies.Count >= enemyCountLimit || enemies.Add(new Enemy(random.Next(4, Engine.WindowSize.X - 4), 5))
+            _ => enemies.Count >= enemyCountLimit || enemies.Add(
+                new Enemy(
+                    random.Next(4, Engine.WindowSize.X - 4), 
+                    random.Next(3, 7))
+                )
         );
         
         phyTimer.AddEvent(

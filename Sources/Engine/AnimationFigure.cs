@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using ConsoleGameEngine;
 using HonkSharp.Fluency;
+using HonkSharp.Functional;
 
 public sealed class AnimationFigure
 {
@@ -11,7 +12,7 @@ public sealed class AnimationFigure
     public AnimationFigure(string[] contents, int color, int interval, bool finite)
         => (figures, this.interval, this.finite) = (contents.Select(c => new Figure(c, color)).ToArray(), interval, finite);
 
-    public void RegisterRenderingTo(UISyncTimer timer, ConsoleEngine engine, int x, int y)
+    public Unit RegisterRenderingTo(UISyncTimer timer, ConsoleEngine engine, int x, int y)
         => timer.AddEvent(interval, figures.Length.NullIf(_ => !finite),
             i => figures[i % figures.Length].RenderTo(engine, x, y).ReplaceWith(true));
 }
